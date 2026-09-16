@@ -203,9 +203,10 @@ img, svg { max-width: 100%; display: block; }
   color: var(--texto-suave);
   margin-top: 3px;
 }
-/* Em telas largas o trilho já mostra o nome da marca na vertical — o
-   cabeçalho não repete o texto, só o símbolo, pra não duplicar. */
-@media (min-width: 1280px) { .cabecalho .marca-so-desktop { display: none; } }
+/* Antes disso o nome sumia do cabeçalho acima de 1280px (a ideia era não
+   repetir o trilho vertical) — na prática sobrava só o ícone sozinho, sem
+   contexto, parecendo quebrado. O nome agora fica sempre visível; o trilho
+   é reforço, não substituto. */
 
 .menu {
   display: none;
