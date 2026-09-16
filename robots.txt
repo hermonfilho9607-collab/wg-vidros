@@ -1,0 +1,20 @@
+# BLOQUEIO TEMPORARIO DE INDEXACAO
+#
+# O site esta no ar apenas para conferencia. Ainda tem dados de exemplo:
+# WhatsApp, endereco, e-mail e os numeros da secao de prova social. Enquanto
+# isso, nenhum buscador deve indexar a pagina.
+#
+# QUANDO OS DADOS REAIS ENTRAREM:
+#   1. apague este bloco e use o conteudo comentado no fim do arquivo
+#   2. remova a linha <meta name="robots" content="noindex, nofollow">
+#      do topo do index.html
+#   3. publique de novo
+
+User-agent: *
+Disallow: /
+
+# ---- CONTEUDO DEFINITIVO, para quando o site estiver pronto ----
+# User-agent: *
+# Allow: /
+#
+# Sitemap: https://wgvidros.vercel.app/sitemap.xml

@@ -1,0 +1,733 @@
+/* =============================================================================
+   WG VIDROS — folha de estilo única
+
+   Direção de arte: extraída do case "KANTO" (Anna Malofeeva) fornecido pelo
+   cliente como referência. É um site escuro, fotográfico, onde a cor vem da
+   luz ambiente e não de uma paleta chapada. Três assinaturas visuais correm
+   o site inteiro: o trilho vertical com o nome da marca, os selos em pílula
+   flutuando sobre foto, e a tipografia fina e bem espaçada.
+
+   Regras principais:
+     - nada de preto puro nem branco puro — tudo tem uma base quente
+     - a cor de destaque (dourado/latão) aparece pouco: CTA e estado ativo
+     - sombra não existe no modo escuro — elevação vem de borda + brilho fino
+     - cantos suaves (raio ~8-16px), pill só no botão do herói e nos selos
+     - uma curva de animação só, e o conteúdo nunca depende de JS pra aparecer
+============================================================================= */
+
+/* ---------- 1. Fichas de cor e medida --------------------------------------- */
+:root {
+  --fundo:            #15110D;  /* base da página — espresso quente, não preto puro */
+  --superficie:        #211A14;  /* painel elevado, card, nav ao rolar */
+  --superficie-funda:  #0D0A08;  /* trilho vertical, rodapé */
+  --texto:             #F3EDE4;  /* texto principal sobre escuro — branco quente */
+  --texto-suave:       #A99C8C;  /* legenda, rótulo, texto secundário */
+  --borda:             #3A2F26;
+  --borda-clara:       rgba(243, 237, 228, .14);
+  --destaque:          #C89456;  /* latão/dourado — só CTA e estado ativo */
+  --destaque-alto:     #D9A868;
+  --texto-no-destaque: #15110D;
+  --fundo-claro:       #EFE9DF;  /* a seção-respiro, clara mas nunca branco puro */
+  --texto-no-claro:    #1B140F;
+  --texto-suave-claro: #6B6058;
+  --erro:              #E4573D;
+
+  --altura-cabecalho:  76px;
+  --altura-barra:      74px;   /* barra fixa de WhatsApp no celular */
+  --largura-trilho:    40px;   /* trilho vertical do logotipo, só desktop */
+
+  --largura: 1180px;
+  --respiro: 20px;
+
+  --raio-sm: 8px;
+  --raio: 16px;
+  --raio-pilula: 999px;
+
+  --curva: cubic-bezier(.22, 1, .36, 1);
+
+  --fonte-titulo: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --fonte-texto:  "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* escala fluida — cresce com a largura da janela */
+  --t-hero: clamp(2.5rem, 1.7rem + 3.8vw, 5.25rem);   /* 40 -> 84 */
+  --t-h2:   clamp(1.75rem, 1.45rem + 1.6vw, 3rem);    /* 28 -> 48 */
+  --t-h3:   clamp(1.25rem, 1.12rem + .6vw, 1.5rem);   /* 20 -> 24 */
+  --t-num:  clamp(2.25rem, 1.7rem + 2.8vw, 3.75rem);  /* 36 -> 60 */
+  --t-corpo: 1.0625rem;   /* 17px — piso, nunca menos */
+  --t-rotulo: .8125rem;
+  --t-pilula: .8125rem;
+}
+
+@media (min-width: 700px)  { :root { --respiro: 32px; } }
+@media (min-width: 860px)  { :root { --altura-barra: 0px; } }
+@media (min-width: 1100px) { :root { --respiro: 40px; } }
+
+/* ---------- 2. Base ----------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--altura-cabecalho) + 16px);
+  scroll-padding-bottom: calc(var(--altura-barra) + 16px);
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte-texto);
+  font-size: var(--t-corpo);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: var(--altura-barra);
+}
+@media (min-width: 860px) { body { padding-bottom: 0; } }
+
+h1, h2, h3 { font-family: var(--fonte-titulo); font-weight: 500; margin: 0; color: var(--texto); }
+p { margin: 0; }
+a { color: inherit; }
+img, svg { max-width: 100%; display: block; }
+
+.limite {
+  max-width: var(--largura);
+  margin-inline: auto;
+  padding-inline: var(--respiro);
+}
+
+.pular {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--destaque);
+  color: var(--texto-no-destaque);
+  padding: 12px 20px;
+  z-index: 200;
+  font-weight: 500;
+}
+.pular:focus { left: var(--respiro); top: 12px; }
+
+:focus-visible {
+  outline: 2px solid var(--destaque);
+  outline-offset: 3px;
+}
+
+/* ---------- 3. Trilho vertical — a assinatura visual principal --------------- */
+/* O nome da marca girado 90°, correndo na borda da tela. Só aparece em telas
+   largas o bastante para sobrar espaço sem apertar o conteúdo (1180px+). Em
+   telas menores essa mesma marca aparece no cabeçalho normal, na horizontal. */
+.trilho {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .trilho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--largura-trilho);
+    height: 100vh;
+    background: var(--superficie-funda);
+    border-right: 1px solid var(--borda);
+    z-index: 60;
+  }
+  .trilho span {
+    display: block;
+    transform: rotate(180deg);
+    writing-mode: vertical-rl;
+    font-family: var(--fonte-titulo);
+    font-weight: 500;
+    font-size: .8125rem;
+    letter-spacing: .28em;
+    color: var(--texto-suave);
+    white-space: nowrap;
+  }
+  body { margin-left: var(--largura-trilho); }
+}
+
+/* ---------- 4. Cabeçalho ------------------------------------------------------ */
+.cabecalho {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--altura-cabecalho);
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 300ms var(--curva), border-color 300ms var(--curva), backdrop-filter 300ms var(--curva);
+}
+@media (min-width: 1280px) { .cabecalho { left: var(--largura-trilho); } }
+
+.cabecalho.rolou {
+  background: rgba(21, 17, 13, .72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: var(--borda);
+}
+
+.cabecalho-int {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 24px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.marca svg { width: 30px; height: 30px; flex-shrink: 0; }
+.marca-texto {
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: 1.0625rem;
+  letter-spacing: .1em;
+  color: var(--texto);
+  line-height: 1.2;
+}
+.marca-texto small {
+  display: block;
+  font-family: var(--fonte-texto);
+  font-weight: 400;
+  font-size: .625rem;
+  letter-spacing: .2em;
+  color: var(--texto-suave);
+  margin-top: 3px;
+}
+/* Em telas largas o trilho já mostra o nome da marca na vertical — o
+   cabeçalho não repete o texto, só o símbolo, pra não duplicar. */
+@media (min-width: 1280px) { .cabecalho .marca-so-desktop { display: none; } }
+
+.menu {
+  display: none;
+  gap: 32px;
+}
+.menu a {
+  text-decoration: none;
+  font-size: .9375rem;
+  color: var(--texto-suave);
+  transition: color 200ms var(--curva);
+}
+.menu a:hover { color: var(--texto); }
+@media (min-width: 860px) { .menu { display: flex; } }
+
+.cabecalho .botao { display: none; }
+@media (min-width: 700px) { .cabecalho .botao { display: inline-flex; } }
+
+/* menu do celular */
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  color: var(--texto);
+  cursor: pointer;
+}
+@media (min-width: 860px) { .menu-toggle { display: none; } }
+
+.menu-movel {
+  position: fixed;
+  inset: var(--altura-cabecalho) 0 0 0;
+  background: var(--fundo);
+  /* Tem que ficar acima da barra-fixa (110) — sem isso o botão de WhatsApp
+     fixo no rodapé do celular fica desenhado por cima do menu aberto. */
+  z-index: 115;
+  padding: 32px var(--respiro);
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+.menu-movel.aberto { display: flex; }
+/* Trava a rolagem do conteúdo atrás do menu aberto — sem isso dá pra
+   arrastar a página por baixo do overlay no celular. */
+body:has(.menu-movel.aberto) { overflow: hidden; }
+.menu-movel a {
+  text-decoration: none;
+  color: var(--texto);
+  font-family: var(--fonte-titulo);
+  font-size: 1.5rem;
+  padding: 16px 12px;
+  margin-inline: -12px;
+  border-radius: var(--raio-sm);
+  border-bottom: 1px solid var(--borda);
+  transition: background 200ms var(--curva);
+}
+.menu-movel a:hover, .menu-movel a:focus-visible { background: var(--superficie); }
+@media (min-width: 860px) { .menu-movel { display: none !important; } }
+
+/* ---------- 5. Botões ---------------------------------------------------------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-titulo);
+  font-weight: 500;
+  font-size: .9375rem;
+  letter-spacing: .02em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 250ms var(--curva), border-color 250ms var(--curva), transform 250ms var(--curva), color 250ms var(--curva);
+  min-height: 48px;
+}
+.botao svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+.botao-principal {
+  background: var(--destaque);
+  color: var(--texto-no-destaque);
+}
+.botao-principal:hover { background: var(--destaque-alto); transform: translateY(-1px); }
+
+.botao-secundario {
+  background: transparent;
+  color: var(--texto);
+  border-color: var(--borda-clara);
+}
+.botao-secundario:hover { border-color: var(--destaque); background: rgba(200, 148, 86, .08); }
+
+.faixa-clara .botao-secundario { color: var(--texto-no-claro); border-color: rgba(27, 20, 15, .2); }
+.faixa-clara .botao-secundario:hover { border-color: var(--destaque); }
+
+/* Botão-cápsula: o resto do site usa cantos suaves (--raio-sm/--raio), mas
+   só o CTA principal do herói vira pílula cheia — o momento de maior
+   contraste da página tem direito a uma assinatura própria, como a
+   referência trazida pelo cliente usava. Não espalhe esse raio 999px pros
+   outros botões, ou a exceção deixa de significar alguma coisa. */
+.botao-capsula {
+  border-radius: var(--raio-pilula);
+  padding: 6px 6px 6px 24px;
+  gap: 16px;
+  transition: gap 250ms var(--curva), background 250ms var(--curva), transform 250ms var(--curva);
+}
+.botao-capsula:hover { gap: 22px; }
+.capsula-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--texto-no-destaque);
+  flex-shrink: 0;
+  transition: transform 250ms var(--curva);
+}
+.capsula-icone svg { width: 17px; height: 17px; color: var(--destaque); }
+.botao-capsula:hover .capsula-icone { transform: scale(1.12); }
+
+/* ---------- 6. Rótulo / eyebrow ------------------------------------------------ */
+.rotulo {
+  display: inline-block;
+  font-family: var(--fonte-texto);
+  font-weight: 500;
+  font-size: var(--t-rotulo);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--destaque);
+  margin-bottom: 18px;
+}
+
+/* ---------- 7. Selos em pílula — segunda assinatura visual --------------------- */
+/* O único momento glassmorphism do sistema: vidro fosco sobre a foto de vidro
+   de verdade. Não espalhe esse tratamento para card ou modal. */
+/* Abaixo de 700px os selos ficam em fila normal, empilhados antes do texto —
+   colidir com título/parágrafo numa tela estreita é pior do que perder o
+   efeito solto. Só a partir de 700px eles saem do fluxo e flutuam soltos
+   sobre a foto, na posição que vem do style inline de cada .pilula no HTML. */
+.pilulas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
+  padding-bottom: 28px;
+}
+.pilula {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(21, 17, 13, .55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--borda-clara);
+  border-radius: var(--raio-pilula);
+  padding: 10px 18px;
+  font-size: var(--t-pilula);
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: var(--texto);
+  pointer-events: auto;
+}
+.pilula svg { width: 15px; height: 15px; color: var(--destaque); flex-shrink: 0; }
+
+@media (min-width: 700px) {
+  .foto > .pilulas {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    padding-bottom: 0;
+    pointer-events: none;
+    /* Mesma largura máxima e centralização de .limite, sem o padding — cada
+       .pilula usa left/right: var(--respiro) (não %) pra bater exatamente
+       com a margem do texto abaixo. Antes disso as pílulas usavam
+       porcentagem da moldura inteira e ficavam fora do alinhamento do
+       título/texto em quase toda largura de tela. */
+    max-width: var(--largura);
+    margin-inline: auto;
+  }
+  .pilula { position: absolute; white-space: nowrap; }
+}
+
+/* ---------- 8. Figuras / fundo fotográfico ------------------------------------- */
+/* As três fotos reais (assets/foto-*.jpg) já estão em uso. --posicao ajusta
+   qual parte da foto fica visível em cada crop (o enquadramento muda muito
+   entre celular alto e desktop largo); --veu é o gradiente que garante
+   contraste do texto por cima — direção diferente por seção, porque nem
+   todo texto fica ancorado embaixo (ver climax, mais abaixo). Se a foto for
+   trocada, comece ajustando esses dois valores antes de mexer em mais nada. */
+.foto {
+  --imagem: none; /* trocada por seção logo abaixo */
+  --posicao: center;
+  --veu: linear-gradient(0deg, rgba(13, 10, 8, .88) 0%, rgba(13, 10, 8, .55) 38%, rgba(13, 10, 8, .18) 65%, rgba(13, 10, 8, .05) 85%);
+  position: relative;
+  overflow: hidden;
+  background-image:
+    var(--imagem),
+    radial-gradient(120% 100% at 82% 8%, rgba(200, 148, 86, .16), transparent 55%),
+    linear-gradient(165deg, #241D17 0%, #17120D 58%, #0F0B08 100%);
+  background-size: cover, auto, auto;
+  background-position: var(--posicao), center, center;
+}
+/* Herói: o assunto (box de vidro) fica à direita da foto; a parede escura à
+   esquerda é onde o texto senta. No celular o corte de "cover" é tão
+   agressivo que --posicao central mostra só o vidro claro — por isso o
+   ajuste específico abaixo de 700px, puxando o enquadramento pra esquerda. */
+/* Mobile-first: o valor sem media query é o do celular (mostra a parede
+   escura), e o desktop, que corta bem menos, é quem sobrescreve depois. */
+.heroi-moldura.foto { --imagem: url('foto-heroi.jpg'); --posicao: 18% 42%; }
+@media (min-width: 700px) {
+  .heroi-moldura.foto { --posicao: 64% 40%; }
+}
+/* Diferenciais: a cena tem profundidade espalhada por todo o quadro — os
+   selos (com fundo fosco próprio) não dependem do véu, só o texto corrido. */
+#diferenciais .foto { --imagem: url('foto-diferenciais.jpg'); --posicao: center 40%; }
+/* Clímax: o vidro/espelho escuro domina a esquerda da foto, exatamente onde
+   o texto fica — por isso um véu horizontal aqui, não vertical. */
+#contato.foto {
+  --imagem: url('foto-climax.jpg');
+  --posicao: 14% center;
+  --veu: linear-gradient(100deg, rgba(13, 10, 8, .9) 0%, rgba(13, 10, 8, .55) 35%, rgba(13, 10, 8, .15) 60%, transparent 78%);
+}
+.foto::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+}
+.foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--veu);
+}
+.foto > * { position: relative; z-index: 1; }
+.foto-conteudo { position: relative; z-index: 2; }
+/* .foto-conteudo (.limite) como item flex direto de .heroi-moldura/.climax:
+   sem width:100% explícito, um item flex com width:auto NÃO herda o
+   comportamento normal de bloco (encher o container até o max-width) — ele
+   encolhe pro tamanho do conteúdo, e margin-inline:auto centraliza essa
+   caixa menor em vez de alinhar à esquerda com o padding de sempre. Medido:
+   ~45px de deslocamento para a direita, fora do alinhamento das pílulas
+   (que centralizam fora do flex). width:100% devolve o comportamento normal
+   de bloco: enche o eixo cruzado, e aí o padding-inline do próprio .limite
+   volta a ser a margem visível, batendo com tudo que usa .limite fora do
+   flex. */
+.heroi-moldura > .foto-conteudo,
+.climax > .foto-conteudo { width: 100%; }
+/* Reforço além do véu — texto grande em cima de foto viva precisa dessa
+   folga extra pra não se fundir com um reflexo ou ponto de luz específico. */
+.foto-conteudo h1, .foto-conteudo h2 { text-shadow: 0 2px 28px rgba(0, 0, 0, .5); }
+.foto-conteudo .intro { text-shadow: 0 1px 16px rgba(0, 0, 0, .6); }
+/* .pilulas em fluxo normal (abaixo de 700px) não deve virar position:relative
+   por essa regra genérica — já nasce static, então a regra acima nem pega.
+   Acima de 700px, a regra específica de position:absolute está junto do
+   resto do responsivo dos selos, na seção 7, com z-index mais alto (3). */
+
+/* variação clara, mesma lógica, para a foto da seção-respiro */
+.foto-clara {
+  background:
+    radial-gradient(120% 100% at 20% 0%, rgba(200, 148, 86, .14), transparent 55%),
+    linear-gradient(165deg, #F4EFE7 0%, #EFE9DF 60%, #E7DFD1 100%);
+}
+.foto-clara::before { opacity: .12; }
+.foto-clara::after { background: linear-gradient(0deg, rgba(239, 233, 223, .7) 0%, rgba(239, 233, 223, .1) 55%, transparent 75%); }
+
+/* ---------- 9. Herói ------------------------------------------------------------ */
+/* .heroi só reserva o respiro ao redor; .heroi-moldura é o cartão de cantos
+   arredondados que carrega a foto (referência trazida pelo cliente). Tudo
+   que era posicionado contra o herói antes — pílulas, texto, indício de
+   rolagem — agora é relativo à moldura, que é quem tem overflow:hidden. */
+.heroi {
+  position: relative;
+  min-height: 100svh;
+  padding: 10px;
+}
+@media (min-width: 700px)  { .heroi { padding: 16px; } }
+@media (min-width: 1100px) { .heroi { padding: 20px; } }
+
+.heroi-moldura {
+  position: relative;
+  height: calc(100svh - 20px);
+  border-radius: 20px;
+  display: flex;
+  /* column, não a row padrão: em row, .foto-conteudo (um <div class="limite">
+     com margin-inline:auto) vira item flex e o auto-margin do flexbox entra
+     em conflito com a centralização do .limite, gerando um deslocamento que
+     não bate com .pilulas (que centraliza fora do flex, por position:
+     absolute). Resultado medido: pílula e título fora de alinhamento em
+     ~45px. Em column + justify-content:flex-end, .foto-conteudo estica no
+     eixo cruzado (align-items:stretch, o padrão) e o margin-inline:auto do
+     próprio .limite volta a centralizar do jeito normal, batendo com .pilulas. */
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: calc(var(--altura-cabecalho) + 32px);
+  padding-bottom: 64px;
+}
+@media (min-width: 700px) {
+  .heroi-moldura { height: calc(100svh - 32px); border-radius: 28px; }
+}
+@media (min-width: 1100px) {
+  .heroi-moldura { height: calc(100svh - 40px); border-radius: 36px; }
+}
+
+.heroi h1 {
+  font-size: var(--t-hero);
+  line-height: 1.03;
+  letter-spacing: -.02em;
+  max-width: 15ch;
+}
+/* Título palavra por palavra: cada .palavra já nasce no HTML com a variável
+   --i (0, 1, 2...), que vira atraso em cascata. O h1 carrega o texto real
+   via aria-label; o span com as palavras é aria-hidden, então leitor de
+   tela nunca lida com a fragmentação. */
+.js-anim .titulo-palavras .palavra {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 650ms var(--curva), transform 650ms var(--curva);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.js-anim .titulo-palavras.visivel .palavra { opacity: 1; transform: translateY(0); }
+
+.heroi .intro {
+  font-size: 1.125rem;
+  color: var(--texto-suave);
+  max-width: 46ch;
+  margin-top: 24px;
+  line-height: 1.6;
+}
+.heroi .acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 36px;
+}
+.rolar-indicio {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto-suave);
+  font-size: .6875rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+@media (min-width: 700px) { .rolar-indicio { display: flex; } }
+.rolar-indicio svg { width: 14px; height: 14px; animation: desce 1.8s var(--curva) infinite; }
+@keyframes desce { 0%,100% { transform: translateY(0); opacity:.5; } 50% { transform: translateY(6px); opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .rolar-indicio svg { animation: none; } }
+
+/* ---------- 10. Capítulos / seções --------------------------------------------- */
+.capitulo { padding-block: 96px; }
+@media (min-width: 860px) { .capitulo { padding-block: 132px; } }
+
+.capitulo-cabecalho { max-width: 62ch; margin-bottom: 56px; }
+.capitulo-cabecalho h2 { letter-spacing: -.01em; line-height: 1.12; }
+.capitulo-cabecalho .intro { color: var(--texto-suave); font-size: 1.0625rem; margin-top: 18px; }
+
+.faixa-clara { background: var(--fundo-claro); color: var(--texto-no-claro); }
+.faixa-clara .texto-suave, .faixa-clara .rotulo-suave { color: var(--texto-suave-claro); }
+
+/* ---------- 11. Serviços -------------------------------------------------------- */
+.servicos {
+  display: grid;
+  gap: 14px;
+}
+@media (min-width: 700px)  { .servicos { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .servicos { grid-template-columns: repeat(3, 1fr); } }
+
+.servico {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 36px 28px;
+  transition: background 250ms var(--curva), border-color 250ms var(--curva);
+}
+.servico:hover { background: #271F18; border-color: var(--destaque); }
+.servico .num {
+  font-family: var(--fonte-titulo);
+  color: var(--texto-suave);
+  font-size: .8125rem;
+  letter-spacing: .1em;
+}
+.servico h3 { margin-top: 20px; font-size: var(--t-h3); }
+.servico p { margin-top: 12px; color: var(--texto-suave); line-height: 1.6; }
+
+/* ---------- 12. Diferenciais (capítulo com pílulas sobre foto) ----------------- */
+.diferenciais-foto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-top: 32px;
+}
+.diferenciais-foto .foto-conteudo { width: 100%; padding-block: 24px 56px; }
+@media (min-width: 700px) {
+  .diferenciais-foto { min-height: 560px; display: block; padding-top: 0; }
+  .diferenciais-foto .foto-conteudo { position: absolute; left: 0; right: 0; bottom: 0; padding-block: 0 56px; }
+}
+
+/* ---------- 13. Processo --------------------------------------------------------- */
+.processo {
+  display: grid;
+  gap: 40px;
+  counter-reset: etapa;
+}
+@media (min-width: 860px) { .processo { grid-template-columns: repeat(4, 1fr); gap: 28px; } }
+
+.etapa { counter-increment: etapa; position: relative; padding-top: 28px; border-top: 1px solid var(--borda); }
+.etapa::before {
+  content: counter(etapa, decimal-leading-zero);
+  font-family: var(--fonte-titulo);
+  font-size: var(--t-num);
+  color: var(--destaque);
+  display: block;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+.etapa h3 { font-size: 1.125rem; }
+.etapa p { margin-top: 10px; color: var(--texto-suave); line-height: 1.6; font-size: .9375rem; }
+
+/* ---------- 14. Números / prova ---------------------------------------------------- */
+.numeros {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 700px) { .numeros { grid-template-columns: repeat(4, 1fr); } }
+.numero .valor { font-family: var(--fonte-titulo); font-size: var(--t-num); color: var(--texto); line-height: 1; }
+.numero .rotulo-numero { margin-top: 10px; font-size: .875rem; color: var(--texto-suave); }
+
+/* depoimento */
+.depoimento {
+  max-width: 62ch;
+  font-family: var(--fonte-titulo);
+  font-size: var(--t-h3);
+  line-height: 1.45;
+  font-weight: 400;
+}
+.depoimento footer { margin-top: 24px; font-family: var(--fonte-texto); font-size: .9375rem; color: var(--texto-suave-claro); }
+
+/* ---------- 15. Clímax / CTA final --------------------------------------------- */
+/* column + justify-content, não align-items:center em row — mesmo motivo do
+   .heroi-moldura, comentado ali: em row, o .foto-conteudo (.limite) vira
+   item flex e o margin-inline:auto do .limite briga com o auto-margin do
+   flexbox em vez de centralizar normalmente. */
+.climax { position: relative; min-height: 640px; display: flex; flex-direction: column; justify-content: center; }
+.climax h2 { font-size: var(--t-hero); max-width: 16ch; letter-spacing: -.02em; line-height: 1.05; }
+.climax .intro { margin-top: 20px; color: var(--texto-suave); max-width: 46ch; font-size: 1.0625rem; }
+.climax .acoes { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 14px; }
+
+/* ---------- 16. Rodapé ------------------------------------------------------------ */
+.rodape { background: var(--superficie-funda); padding-block: 64px 40px; }
+.rodape-grade { display: grid; gap: 40px; }
+@media (min-width: 860px) { .rodape-grade { grid-template-columns: 1.4fr 1fr 1fr; gap: 24px; } }
+.rodape h3 { font-size: .8125rem; letter-spacing: .16em; text-transform: uppercase; color: var(--texto-suave); margin-bottom: 18px; font-family: var(--fonte-texto); font-weight: 500; }
+.rodape-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rodape-links a { text-decoration: none; color: var(--texto); font-size: .9375rem; }
+.rodape-links a:hover { color: var(--destaque); }
+.rodape-marca { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.rodape-marca svg { width: 30px; height: 30px; }
+.rodape p.legenda { color: var(--texto-suave); font-size: .9375rem; max-width: 40ch; line-height: 1.6; }
+.rodape-base {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--borda);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  font-size: .8125rem;
+  color: var(--texto-suave);
+}
+.rodape-base a { color: var(--texto-suave); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- 17. Barra fixa do WhatsApp (só celular) ---------------------------- */
+.barra-fixa {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 110;
+  background: var(--superficie-funda);
+  border-top: 1px solid var(--borda);
+  padding: 13px var(--respiro);
+  padding-bottom: calc(13px + env(safe-area-inset-bottom));
+}
+.barra-fixa .botao { width: 100%; justify-content: center; }
+@media (min-width: 860px) { .barra-fixa { display: none; } }
+
+/* ---------- 18. Animação de entrada -------------------------------------------- */
+/* O conteúdo é visível por padrão. A classe js-anim só é adicionada pelo script
+   no <head> depois de confirmar IntersectionObserver + prefers-reduced-motion.
+   Sem isso, nada é escondido — ver comentário no index.html. */
+.js-anim .entra {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 700ms var(--curva), transform 700ms var(--curva);
+}
+.js-anim .entra.visivel { opacity: 1; transform: translateY(0); }
+.js-anim .entra-atraso1.visivel { transition-delay: 90ms; }
+.js-anim .entra-atraso2.visivel { transition-delay: 180ms; }
+.js-anim .entra-atraso3.visivel { transition-delay: 270ms; }
+
+/* CORREÇÃO: .foto-zoom e .foto são a MESMA tag no HTML (ex.: class="heroi-
+   moldura foto foto-zoom"), nunca pai/filho — um seletor ".foto-zoom > .foto"
+   não bate com nada e o zoom de entrada nunca rodou. overflow:hidden já vem
+   de .foto (seção 8); aqui só falta a transição, na própria .foto-zoom. */
+.js-anim .foto-zoom { transform: scale(1.04); transition: transform 1400ms var(--curva); }
+.js-anim .foto-zoom.visivel { transform: scale(1); }
+
+/* ---------- 19. Utilitários ------------------------------------------------------ */
+.somente-leitor {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
