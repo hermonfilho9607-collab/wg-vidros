@@ -1,4 +1,12 @@
-# WG Vidros — manual do site
+# Vidraçaria Transparência — manual do site
+
+**Nome trocado de "WG Vidros" para "Vidraçaria Transparência"**, mesma identidade visual.
+No cabeçalho, rodapé e trilho vertical (espaço apertado) aparece só "TRANSPARÊNCIA";
+em título da página, JSON-LD, mensagens de WhatsApp e rodapé legal aparece o nome
+completo. A paleta também foi aliviada — todas as cores escuras (`--fundo`,
+`--superficie`, `--superficie-funda`, `--borda`) ficaram um pouco mais claras, mesma
+família quente, sem perder contraste (reconferido depois da troca). O restante deste
+documento ainda cita "WG Vidros" nalguns pontos — a essência não mudou, só o nome.
 
 Site estático de uma página só (scroll contínuo, sem sub-páginas). Não precisa de
 servidor, banco de dados nem plugin — são arquivos soltos, qualquer hospedagem que

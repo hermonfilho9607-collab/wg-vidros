@@ -17,4 +17,4 @@ Disallow: /
 # User-agent: *
 # Allow: /
 #
-# Sitemap: https://wgvidros.vercel.app/sitemap.xml
+# Sitemap: https://vidracaria-transparencia.vercel.app/sitemap.xml

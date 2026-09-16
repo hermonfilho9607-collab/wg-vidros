@@ -6,7 +6,7 @@
 
 ---
 
-**Project:** WG Vidros
+**Project:** Vidraçaria Transparência (renomeado de "WG Vidros" — mesma identidade visual, paleta escura aliviada depois)
 **Generated:** 2026-09-16 10:29:16
 **Revised:** manually overridden after grounding in the client's reference (`Referencia.jpg`, brand case "KANTO" by Anna Malofeeva) — see rationale below
 **Category:** Vidraçaria full-service (residencial + comercial), posicionamento premium/sofisticado

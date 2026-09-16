@@ -1,5 +1,5 @@
 /* =============================================================================
-   WG VIDROS — folha de estilo única
+   VIDRAÇARIA TRANSPARÊNCIA — folha de estilo única
 
    Direção de arte: extraída do case "KANTO" (Anna Malofeeva) fornecido pelo
    cliente como referência. É um site escuro, fotográfico, onde a cor vem da
@@ -17,16 +17,21 @@
 
 /* ---------- 1. Fichas de cor e medida --------------------------------------- */
 :root {
-  --fundo:            #15110D;  /* base da página — espresso quente, não preto puro */
-  --superficie:        #211A14;  /* painel elevado, card, nav ao rolar */
-  --superficie-funda:  #0D0A08;  /* trilho vertical, rodapé */
-  --texto:             #F3EDE4;  /* texto principal sobre escuro — branco quente */
-  --texto-suave:       #A99C8C;  /* legenda, rótulo, texto secundário */
-  --borda:             #3A2F26;
-  --borda-clara:       rgba(243, 237, 228, .14);
-  --destaque:          #C89456;  /* latão/dourado — só CTA e estado ativo */
+  /* Paleta aliviada a pedido do cliente — mesma família quente e escura,
+     só menos pesada. --fundo foi de #15110D pra #1C1712 e assim por diante;
+     todo rgba() derivado dessas cores, no resto do arquivo, foi recalculado
+     junto (procure "aliviado" nos comentários). Contraste reconferido depois
+     da troca — ver checklist no fim do arquivo. */
+  --fundo:            #1C1712;  /* base da página — antes #15110D */
+  --superficie:        #29221B;  /* painel elevado, card, nav ao rolar — antes #211A14 */
+  --superficie-funda:  #17120D;  /* trilho vertical, rodapé — antes #0D0A08 */
+  --texto:             #F5F0E8;  /* texto principal sobre escuro — antes #F3EDE4 */
+  --texto-suave:       #B7AA9A;  /* legenda, rótulo, texto secundário — antes #A99C8C */
+  --borda:             #48392A;  /* antes #3A2F26 */
+  --borda-clara:       rgba(245, 240, 232, .14);
+  --destaque:          #C89456;  /* latão/dourado — só CTA e estado ativo, sem mudança */
   --destaque-alto:     #D9A868;
-  --texto-no-destaque: #15110D;
+  --texto-no-destaque: #1C1712;
   --fundo-claro:       #EFE9DF;  /* a seção-respiro, clara mas nunca branco puro */
   --texto-no-claro:    #1B140F;
   --texto-suave-claro: #6B6058;
@@ -165,7 +170,7 @@ img, svg { max-width: 100%; display: block; }
 @media (min-width: 1280px) { .cabecalho { left: var(--largura-trilho); } }
 
 .cabecalho.rolou {
-  background: rgba(21, 17, 13, .72);
+  background: rgba(28, 23, 18, .72); /* aliviado, rgb do novo --fundo */
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom-color: var(--borda);
@@ -362,7 +367,7 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(21, 17, 13, .55);
+  background: rgba(28, 23, 18, .55); /* aliviado, rgb do novo --fundo */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--borda-clara);
@@ -404,13 +409,13 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
 .foto {
   --imagem: none; /* trocada por seção logo abaixo */
   --posicao: center;
-  --veu: linear-gradient(0deg, rgba(13, 10, 8, .88) 0%, rgba(13, 10, 8, .55) 38%, rgba(13, 10, 8, .18) 65%, rgba(13, 10, 8, .05) 85%);
+  --veu: linear-gradient(0deg, rgba(23, 18, 13, .82) 0%, rgba(23, 18, 13, .5) 38%, rgba(23, 18, 13, .16) 65%, rgba(23, 18, 13, .05) 85%); /* aliviado: rgb novo + pico .88->.82 */
   position: relative;
   overflow: hidden;
   background-image:
     var(--imagem),
     radial-gradient(120% 100% at 82% 8%, rgba(200, 148, 86, .16), transparent 55%),
-    linear-gradient(165deg, #241D17 0%, #17120D 58%, #0F0B08 100%);
+    linear-gradient(165deg, #2B231C 0%, #1E1812 58%, #16110D 100%); /* aliviado */
   background-size: cover, auto, auto;
   background-position: var(--posicao), center, center;
 }
@@ -432,7 +437,7 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
 #contato.foto {
   --imagem: url('foto-climax.jpg');
   --posicao: 14% center;
-  --veu: linear-gradient(100deg, rgba(13, 10, 8, .9) 0%, rgba(13, 10, 8, .55) 35%, rgba(13, 10, 8, .15) 60%, transparent 78%);
+  --veu: linear-gradient(100deg, rgba(23, 18, 13, .84) 0%, rgba(23, 18, 13, .5) 35%, rgba(23, 18, 13, .14) 60%, transparent 78%); /* aliviado: rgb novo + pico .9->.84 */
 }
 .foto::before {
   content: "";
@@ -595,7 +600,7 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
   padding: 36px 28px;
   transition: background 250ms var(--curva), border-color 250ms var(--curva);
 }
-.servico:hover { background: #271F18; border-color: var(--destaque); }
+.servico:hover { background: #2E251D; border-color: var(--destaque); } /* aliviado */
 .servico .num {
   font-family: var(--fonte-titulo);
   color: var(--texto-suave);
