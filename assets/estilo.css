@@ -582,7 +582,22 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
 .capitulo-cabecalho h2 { letter-spacing: -.01em; line-height: 1.12; }
 .capitulo-cabecalho .intro { color: var(--texto-suave); font-size: 1.0625rem; margin-top: 18px; }
 
-.faixa-clara { background: var(--fundo-claro); color: var(--texto-no-claro); }
+/* Redefine --texto/--texto-suave DENTRO do escopo de .faixa-clara: qualquer
+   regra do site que use var(--texto) (ex.: "h1,h2,h3{color:var(--texto)}",
+   que tem mais especificidade que .faixa-clara sozinho e por isso ganhava
+   dela) passa a resolver pro tom escuro certo, sem precisar sobrescrever
+   elemento por elemento. Bug real: h2 e os números grandes (.numero .valor)
+   ficavam quase brancos sobre o fundo claro — 1.06:1 de contraste, ilegível.
+   --destaque também é redefinido: o dourado de #C89456 dá só 2.22:1 aqui,
+   a versão mais escura dá 5.92:1. Não existe botão de fundo dourado dentro
+   de .faixa-clara hoje — se um dia entrar um, confira esse contraste de novo. */
+.faixa-clara {
+  background: var(--fundo-claro);
+  color: var(--texto-no-claro);
+  --texto: var(--texto-no-claro);
+  --texto-suave: var(--texto-suave-claro);
+  --destaque: #7A4E1E;
+}
 .faixa-clara .texto-suave, .faixa-clara .rotulo-suave { color: var(--texto-suave-claro); }
 
 /* ---------- 11. Serviços -------------------------------------------------------- */
