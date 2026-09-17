@@ -160,7 +160,10 @@ img, svg { max-width: 100%; display: block; }
   left: 0;
   right: 0;
   z-index: 100;
-  height: var(--altura-cabecalho);
+  min-height: var(--altura-cabecalho); /* min-, não height: fixo — "VIDRAÇARIA
+     TRANSPARÊNCIA" quebra em 2 linhas em telas bem estreitas (~360-420px);
+     com height fixo isso cortava/apertava o conteúdo em vez de crescer. */
+  padding-block: 8px;
   display: flex;
   align-items: center;
   background: transparent;
@@ -194,10 +197,15 @@ img, svg { max-width: 100%; display: block; }
 .marca-texto {
   font-family: var(--fonte-titulo);
   font-weight: 500;
-  font-size: 1.0625rem;
-  letter-spacing: .1em;
+  font-size: .8125rem; /* cresce em telas maiores, ver media query — "VIDRAÇARIA
+     TRANSPARÊNCIA" no tamanho de desktop não cabe numa linha só abaixo de
+     ~420px de largura */
+  letter-spacing: .04em;
   color: var(--texto);
   line-height: 1.2;
+}
+@media (min-width: 480px) {
+  .marca-texto { font-size: 1.0625rem; letter-spacing: .1em; }
 }
 .marca-texto small {
   display: block;
@@ -419,25 +427,32 @@ body:has(.menu-movel.aberto) { overflow: hidden; }
   background-size: cover, auto, auto;
   background-position: var(--posicao), center, center;
 }
-/* Herói: o assunto (box de vidro) fica à direita da foto; a parede escura à
-   esquerda é onde o texto senta. No celular o corte de "cover" é tão
-   agressivo que --posicao central mostra só o vidro claro — por isso o
-   ajuste específico abaixo de 700px, puxando o enquadramento pra esquerda. */
-/* Mobile-first: o valor sem media query é o do celular (mostra a parede
-   escura), e o desktop, que corta bem menos, é quem sobrescreve depois. */
-.heroi-moldura.foto { --imagem: url('foto-heroi.jpg'); --posicao: 18% 42%; }
+/* Mobile-first de verdade agora: abaixo de 700px cada seção usa uma foto
+   RETRATO (4:5, foto-*-mobile.jpg) pensada pro recorte alto do celular —
+   antes disso, as 3 fotos eram todas paisagem (16:9) e o "cover" cortava a
+   maior parte da largura pra caber, sobrando só uma fatia fina do
+   enquadramento original. A partir de 700px, a foto widescreen original
+   assume (ela sim precisa de --posicao ajustado, porque nela o corte
+   continua agressivo). --veu (definido em .foto, acima) vale pras duas. */
+.heroi-moldura.foto { --imagem: url('foto-heroi-mobile.jpg'); --posicao: center; }
+#diferenciais .foto { --imagem: url('foto-diferenciais-mobile.jpg'); --posicao: center; }
+#contato.foto { --imagem: url('foto-climax-mobile.jpg'); --posicao: center; }
+
 @media (min-width: 700px) {
-  .heroi-moldura.foto { --posicao: 64% 40%; }
-}
-/* Diferenciais: a cena tem profundidade espalhada por todo o quadro — os
-   selos (com fundo fosco próprio) não dependem do véu, só o texto corrido. */
-#diferenciais .foto { --imagem: url('foto-diferenciais.jpg'); --posicao: center 40%; }
-/* Clímax: o vidro/espelho escuro domina a esquerda da foto, exatamente onde
-   o texto fica — por isso um véu horizontal aqui, não vertical. */
-#contato.foto {
-  --imagem: url('foto-climax.jpg');
-  --posicao: 14% center;
-  --veu: linear-gradient(100deg, rgba(23, 18, 13, .84) 0%, rgba(23, 18, 13, .5) 35%, rgba(23, 18, 13, .14) 60%, transparent 78%); /* aliviado: rgb novo + pico .9->.84 */
+  /* Herói: o assunto (box de vidro) fica à direita da foto widescreen; a
+     parede escura à esquerda é onde o texto senta. */
+  .heroi-moldura.foto { --imagem: url('foto-heroi.jpg'); --posicao: 64% 40%; }
+  /* Diferenciais: a cena tem profundidade espalhada por todo o quadro — os
+     selos (com fundo fosco próprio) não dependem do véu, só o texto corrido. */
+  #diferenciais .foto { --imagem: url('foto-diferenciais.jpg'); --posicao: center 40%; }
+  /* Clímax: o vidro/espelho escuro domina a esquerda da foto widescreen,
+     exatamente onde o texto fica — por isso um véu horizontal aqui, não
+     vertical (--veu sobrescrito só a partir daqui). */
+  #contato.foto {
+    --imagem: url('foto-climax.jpg');
+    --posicao: 14% center;
+    --veu: linear-gradient(100deg, rgba(23, 18, 13, .84) 0%, rgba(23, 18, 13, .5) 35%, rgba(23, 18, 13, .14) 60%, transparent 78%); /* aliviado: rgb novo + pico .9->.84 */
+  }
 }
 .foto::before {
   content: "";

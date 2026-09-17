@@ -1,12 +1,16 @@
 # Vidraçaria Transparência — manual do site
 
-**Nome trocado de "WG Vidros" para "Vidraçaria Transparência"**, mesma identidade visual.
-No cabeçalho, rodapé e trilho vertical (espaço apertado) aparece só "TRANSPARÊNCIA";
-em título da página, JSON-LD, mensagens de WhatsApp e rodapé legal aparece o nome
-completo. A paleta também foi aliviada — todas as cores escuras (`--fundo`,
-`--superficie`, `--superficie-funda`, `--borda`) ficaram um pouco mais claras, mesma
-família quente, sem perder contraste (reconferido depois da troca). O restante deste
-documento ainda cita "WG Vidros" nalguns pontos — a essência não mudou, só o nome.
+**Nome trocado de "WG Vidros" para "Vidraçaria Transparência"**, mesma identidade
+visual, nome completo em todo lugar — inclusive cabeçalho, rodapé e trilho vertical
+(a versão curta "TRANSPARÊNCIA" só nesses três lugares foi uma economia de espaço
+minha; o cliente pediu o nome completo em tudo). Isso quebrava o cabeçalho no celular
+— "VIDRAÇARIA TRANSPARÊNCIA" não cabia numa linha só no tamanho de fonte do desktop
+— corrigido com um tamanho de fonte menor abaixo de 480px e `min-height` no lugar de
+`height` fixa no `.cabecalho` (ver seção 4). A paleta também foi aliviada — todas as
+cores escuras (`--fundo`, `--superficie`, `--superficie-funda`, `--borda`) ficaram um
+pouco mais claras, mesma família quente, sem perder contraste (reconferido depois da
+troca). O restante deste documento ainda cita "WG Vidros" nalguns pontos — a essência
+não mudou, só o nome.
 
 Site estático de uma página só (scroll contínuo, sem sub-páginas). Não precisa de
 servidor, banco de dados nem plugin — são arquivos soltos, qualquer hospedagem que
@@ -61,30 +65,48 @@ começando com `https://`. WhatsApp e Facebook só mostram a miniatura com URL c
 
 ---
 
-## 2. As fotos
+## 2. As fotos — 2 por seção, retrato e paisagem
 
-As 3 fotos estão em uso: `assets/foto-heroi.jpg`, `foto-diferenciais.jpg` e
-`foto-climax.jpg`. Vieram como PNG em alta (~1,7-2,1 MB cada); eu converti para JPEG
-otimizado (`assets/*.jpg`, 146-256 KB cada — 85-90% menor, mesma qualidade na tela) e
-arquivei os originais em `../fotos-originais/wg-vidros-*-original.png` (pasta
-compartilhada da oficina, ver `Sites/README.md`). Também recortei `assets/
-compartilhamento.jpg` (1200×630) a partir do herói, para a miniatura de link.
+Cada uma das 3 seções com foto tem **duas** imagens agora:
+
+| Seção | Retrato (celular, abaixo de 700px) | Paisagem (desktop, 700px+) |
+|---|---|---|
+| Herói | `foto-heroi-mobile.jpg` (4:5) | `foto-heroi.jpg` (16:9) |
+| Diferenciais | `foto-diferenciais-mobile.jpg` (4:5) | `foto-diferenciais.jpg` (16:9) |
+| Clímax | `foto-climax-mobile.jpg` (4:5) | `foto-climax.jpg` (16:9) |
+
+Isso existe porque uma foto paisagem, cortada por `background-size:cover` num
+celular alto e estreito, mostra só uma fatia vertical fina do enquadramento original
+— a composição inteira (a luz, a profundidade, o clima) se perde. A versão retrato é
+pensada pra essa fatia alta desde o início. Todas vieram como PNG em alta
+(~1,6-2,2 MB cada); convertidas pra JPEG otimizado (`assets/*.jpg`, 146-260 KB cada)
+e originais arquivados em `../fotos-originais/wg-vidros-*-original.png`. Também
+recortei `assets/compartilhamento.jpg` (1200×630) a partir do herói desktop, pra
+miniatura de link.
 
 **Como o enquadramento funciona:** cada `.foto` tem duas variáveis CSS,
 `--posicao` (que parte da foto fica visível no recorte) e `--veu` (o degradê escuro
-por trás do texto, pra garantir contraste). Ficam declaradas logo acima de cada
-`#id.foto` em `assets/estilo.css`, seção 8. Se trocar alguma foto por uma nova:
+por trás do texto, pra garantir contraste). A regra de `--imagem`/`--posicao` de cada
+seção aparece duas vezes em `assets/estilo.css` (seção 8): uma vez fora de qualquer
+media query (mobile, usa a foto retrato) e de novo dentro de `@media (min-width:
+700px)` (desktop, usa a paisagem). Se trocar alguma foto por uma nova:
 
 1. Salve com o **mesmo nome exato** dentro de `assets/` — nenhum outro código muda.
-2. Abra a página e confira o enquadramento no celular *e* no desktop — o corte de
-   `background-size:cover` é bem mais agressivo no celular (viewport alto e estreito
-   contra uma foto larga), então `--posicao` quase sempre precisa de um valor
-   diferente por seção. Foi exatamente isso que aconteceu com o herói: `center`
-   funcionava no desktop mas cortava pra dentro do vidro claro no celular, matando o
-   contraste do título — o ajuste final ficou em `18% 42%` só abaixo de 700px.
+   Se só tiver uma foto nova (não duas), pode apontar as duas variáveis pro mesmo
+   arquivo — vai funcionar, só não vai ficar tão bem enquadrado no celular quanto
+   uma retrato dedicada.
+2. Abra a página e confira o enquadramento no celular *e* no desktop — a paisagem
+   ainda precisa de `--posicao` ajustado (o corte nela é mais agressivo); a retrato
+   geralmente funciona bem só com `center`, mas confira.
 3. Se a foto nova tiver a parte escura em outro canto, ajuste `--veu` também: herói e
    diferenciais usam um degradê vertical (texto embaixo), o clímax usa horizontal
-   (texto à esquerda, onde a foto atual já é mais escura).
+   no desktop (texto à esquerda) — no celular ele usa o `--veu` padrão (vertical),
+   porque a foto retrato do clímax tem a luz mais concentrada em cima, não à esquerda.
+
+**Cache do CSS:** o link do `estilo.css` tem `?v=6` no `index.html` e no `404.html`.
+Aumente esse número toda vez que editar o CSS e quiser ter certeza que quem já visitou
+o site (ou uma ferramenta de preview) não fica com uma cópia antiga em cache — o
+`_headers`/`vercel.json` guardam `/assets/*` por um dia inteiro.
 
 **Selos sobre foto — cuidado com colisão.** No herói e no capítulo "Diferenciais", os
 selos (`.pilula`) são posicionados por `top/left/right` em `style` inline, direto no
@@ -221,7 +243,7 @@ para pré-visualizar direto pela ferramenta de preview.)
 | `404.html` | Página de erro |
 | `assets/estilo.css` | Toda a aparência do site, comentada em português |
 | `assets/favicon.svg` | Ícone da aba do navegador e marca reaproveitada no site |
-| `assets/foto-heroi.jpg`, `foto-diferenciais.jpg`, `foto-climax.jpg` | As 3 fotos do site, já otimizadas — ver seção 2 |
+| `assets/foto-*.jpg` (6 arquivos: heroi/diferenciais/climax × normal/mobile) | As fotos do site, retrato + paisagem, já otimizadas — ver seção 2 |
 | `assets/compartilhamento.jpg` | Miniatura ao compartilhar o link (1200×630), recortada do herói |
 | `../fotos-originais/wg-vidros-*-original.png` | Os PNGs em alta, sem otimizar — fora da pasta do site, não sobem pro Vercel |
 | `design-system/wg-vidros/MASTER.md` | Ficha de design (cores, tipografia, motion) gerada + corrigida à mão |

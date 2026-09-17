@@ -29,16 +29,19 @@
                                    não invente: troque pelos números reais ou
                                    apague a métrica)
 
-     FOTOGRAFIA — já em uso
-       As 3 fotos (assets/foto-heroi.jpg, foto-diferenciais.jpg, foto-climax.jpg)
-       já estão ativas via a variável --imagem em .foto (assets/estilo.css),
-       convertidas de PNG para JPEG (~85-90% menores, mesma qualidade visível
-       na tela). Os originais em alta
-       (PNG) estão arquivados em ../fotos-originais/wg-vidros-*-original.png.
-       Se um dia entrarem fotos reais do trabalho da Vidraçaria Transparência, é só substituir
-       o arquivo pelo nome exato — nenhum outro código muda. --posicao e --veu,
-       logo acima de cada #id.foto no CSS, controlam enquadramento e o
-       degradê de legibilidade; ajuste os dois primeiro se trocar a foto.
+     FOTOGRAFIA — já em uso, 2 versões por seção
+       Cada seção tem uma foto RETRATO (assets/foto-*-mobile.jpg, 4:5) usada abaixo
+       de 700px e uma foto PAISAGEM (assets/foto-*.jpg, 16:9) usada a partir dali —
+       a retrato existe porque a paisagem, num "cover" recortado pra caber num
+       celular alto e estreito, mostrava só uma fatia fina do enquadramento
+       original. Ambas ativas via a variável --imagem em .foto (assets/estilo.css),
+       convertidas de PNG para JPEG (~85-90% menores, mesma qualidade visível na
+       tela). Os originais em alta (PNG) estão arquivados em
+       ../fotos-originais/wg-vidros-*-original.png. Se um dia entrarem fotos reais
+       do trabalho da Vidraçaria Transparência, são 2 fotos por seção (retrato +
+       paisagem), mesmo nome de arquivo — nenhum outro código muda. --posicao e
+       --veu, logo acima de cada regra de --imagem no CSS, controlam enquadramento
+       e o degradê de legibilidade; ajuste os dois primeiro se trocar uma foto.
 
      AINDA FALTA CONTEÚDO
        A seção de depoimento está comentada logo antes do rodapé. Só publique
@@ -65,7 +68,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/estilo.css?v=4">
+<link rel="stylesheet" href="assets/estilo.css?v=6">
 
 <script type="application/ld+json">
 {
